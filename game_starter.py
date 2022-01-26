@@ -1,7 +1,7 @@
 import random
 
 # Food values
-food = random.uniform(0,2)
+food = random.randint(0,2)
 CANDY = 0
 STEAK = 1
 POTION = 2
@@ -19,7 +19,7 @@ BUNNY_DAMAGE = 5
 DWARF_DAMAGE = 10
 TROLL_DAMAGE = 20
 WYVERN_DAMAGE = 25
-GAMBLER_DAMAGE = random.uniform(0,35)
+GAMBLER_DAMAGE = random.randint(0,35)
 
 # Misc values
 TUITION = 50
