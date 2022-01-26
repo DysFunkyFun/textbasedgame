@@ -65,7 +65,7 @@ def find_treasure(max_gold: int) -> int:
     else:
         print('\nYou find a huge mound of ' + str(gold) + ' gold pieces!\n')
     
-    return golds #<---------- ''''''' '''''
+    return gold
     
 def eat_food(food: int, health: int):
     '''
