@@ -73,7 +73,7 @@ def search_for_treasure() -> bool:
     user_choice = input('This room seems interesting, would you like to search for treasure? (Y/N)\n').lower()
 
     while user_choice not in valid_responses:
-        user_choice = input('Sorry that\'s not a valid response, please type (Y/N) to make your choice: ')
+        user_choice = input('Sorry that\'s not a valid response, please type either (Y/N):\n')
 
     if user_choice == 'yes' or user_choice == 'y':
         return True
@@ -208,7 +208,7 @@ def room_1(gold: int, health: int):
         The amount of gold the player currently has.
     ''' 
     print('\n------------------------------------------------------------')
-    print('You just stumbled into a hole in the ground. When you')
+    print('You stumble into a hole in the ground. When you')
     print('shake off the dirt and leaves you realize you are in')
     print('the entrance to a cave that looks man made. As you')
     print('take a look around, you decide it might be fun to explore.\n')
@@ -226,7 +226,8 @@ def room_1(gold: int, health: int):
     elif direction == 'S':
         room_2(gold, health)
     else:
-        print('Error: invalid direction managed to split through within room 1')
+        print('You fumble around in the darkness...your hands meet familiar structures as you feel your way towards the beaten path. You realize you\'re back where you started.')
+
  
     
 def room_2(gold: int, health: int):
@@ -251,7 +252,7 @@ def room_2(gold: int, health: int):
 
     if search_for_treasure():
         gold += find_treasure(10)
-        print('While you were searching for treasure, you heard something creeping in the shadows behind you...')
+        print('While you search for treasure, you hear something creeping in the shadows behind you...')
         damage_dealt = fight_battle(TROLL)
         health = update_health(damage_dealt, health)
     
@@ -266,6 +267,7 @@ def room_2(gold: int, health: int):
         print('There\'s nothing in that direction...')
 
     print_status(gold, health)
+
 
     if direction == 'N':
         room_1(gold, health)
