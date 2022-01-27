@@ -28,9 +28,9 @@ invalid_direction_msg = ('You fumble around in the darkness...your hands meet fa
 cardinal_directions = ['N', 'E', 'S', 'W']
 did_player_win = False
 
-#Rooms dictionary -- the purpose will be to store the state of each room so battles are not repeated.
+# Rooms dictionary -- the purpose will be to store the contents of each room.
 Rooms_list = [
-    #Room 1
+    # Room 1
     {
         'room_num': 1,
         'message':  
@@ -48,7 +48,43 @@ Rooms_list = [
         'west_destination': lambda: print(invalid_direction_msg)
     },
     
-    #Room 4
+    # Room 2
+    {
+        'room_num': 2,
+        'message': 
+        '''
+        ---------------------------------------------------------
+        You have entered the throne room. In the middle
+        of the room there is a giant wooden throne with
+        intricate carvings. As you take a closer look at the
+        carvings, you see that they show trolls chasing humans.
+        Hmmm, maybe this is not a great place to stop for a rest.
+        ''',
+        'valid_directions': ['N', 'E'],
+        'north_destination': lambda: update_player_room(1),
+        'east_destination': lambda: update_player_room(3),
+        'south_destination': lambda: print(invalid_direction_msg),
+        'west_destination': lambda: print(invalid_direction_msg)
+    },
+    
+    # Room 3
+    {
+        'room_num': 3,
+        'message': 
+        '''
+        ---------------------------------------------------------
+        You have entered an abandoned pub. There are piles
+        of dirty dishes and empty beer mugs all over the place.
+        You hear someone coming and duck behind a table to hide.
+        ''',
+        'valid_directions': ['S', 'E'],
+        'north_destination': lambda: print(invalid_direction_msg),
+        'east_destination': lambda: update_player_room(5),
+        'south_destination': lambda: update_player_room(2),
+        'west_destination': lambda: print(invalid_direction_msg)
+    },
+    
+    # Room 4
     {
         'room_num': 4,
         'message': 
@@ -63,9 +99,37 @@ Rooms_list = [
         'east_destination': lambda: update_player_room(6),
         'south_destination': lambda: update_player_room(5),
         'west_destination': lambda: update_player_room(1)
-    }
+    },
 
-    
+    # Room 5
+    {
+        'room_num': 5,
+        'message': 
+        '''
+        -----------------------------------------------------------
+
+        ''',
+        'valid_directions': ['N', 'E', 'W'],
+        'north_destination': lambda: update_player_room(4),
+        'east_destination': lambda: update_player_room(6),
+        'south_destination': lambda: print(invalid_direction_msg),
+        'west_destination': lambda: update_player_room(3)
+    },
+
+    # Room 6
+    {
+        'room_num': 6,
+        'message': 
+        '''
+        -----------------------------------------------------------
+        
+        ''',
+        'valid_directions': ['E', 'W'],
+        'north_destination': lambda: print(invalid_direction_msg),
+        'east_destination': lambda: update_player_room(4),
+        'south_destination': lambda: print(invalid_direction_msg),
+        'west_destination': lambda: update_player_room(5)
+    }
 ]
 
 
@@ -192,7 +256,8 @@ def fight_battle(creature: int):
         print('\nAn angry troll takes a swing at you and does ' + str(damage) + ' damage to your health.\n')
     elif creature == WYVERN:
         damage = random.randint(1, WYVERN_DAMAGE)
-        print('\nThe wyvern pierces you with their stinger, dealing ' + str(damage) + ' damage to your health.\n')    
+        print('Chills run down your spine as you notice a polymorphic creature standing in your way -- it has wings like a bat and a tail like a scorpion -- the head is that of a lion.')
+        print('\nThe Wyvern pierces you with their stinger, dealing ' + str(damage) + ' damage to your health.\n')    
     elif creature == GAMBLER:
         damage = random.randint(1, GAMBLER_DAMAGE)
         print('A dwarf-like creature with beady eyes smiles at you -- you hear him snicker menacingly as he begins to shake a pair of magical dice.')
@@ -274,25 +339,7 @@ def room_2():
     '''
     This function visits the second room in the game.
     ''' 
-    print('\n------------------------------------------------------------')
-    print('You have entered the throne room. In the middle')
-    print('of the room there is a giant wooden throne with')
-    print('intricate carvings. As you take a closer look at the')
-    print('carvings, you see that they show trolls chasing humans.')
-    print('Hmmm, maybe this is not a great place to stop for a rest.\n')
-
     
-
-    if search_for_treasure():
-        gold += find_treasure(10)
-        print('While you search for treasure, you hear something creeping in the shadows behind you...')
-        damage_dealt = fight_battle(TROLL)
-        health = ...
-    
-    else:
-        print('You hear something shuffling behind you... it\'s approaching quickly...')
-        damage_dealt = fight_battle(TROLL)
-        health = ...
 
     print_status()
 
@@ -302,22 +349,14 @@ def room_3():
     '''
     This function visits the third room in the game.
     ''' 
-    print('\n------------------------------------------------------------')
-    print('You have entered an abandoned pub. There are piles')
-    print('of dirty dishes and empty beer mugs all over the place.')
-    print('You hear someone coming and duck behind a table to hide.\n')
+    damage = fight_battle(DWARF)
+    damage_player(damage)
 
-    valid_directions = ['S', 'E']
+    if player['health'] > 0:
+        if search_for_treasure():
+            find_treasure(15)
     
-    damage_dealt = fight_battle(GAMBLER)
-    health = ...
-    
-    if search_for_treasure():
-        find_treasure(10)
-    
-    
-    
-    
+            
     print_status()
 
 
@@ -343,10 +382,8 @@ def room_5():
     '''
     This function visits the fifth room in the game.
     ''' 
-    print('\n---------------------------------------------------------------------------------------------')
-    print('You have no idea where you are -- you know for sure you\'ve come across another room')
-    print('Stumbling in the darkness, the only stimulus is the wind chasing through what must be the exit.')
-    print('\n')
+    
+    
 
     
 
