@@ -1,7 +1,7 @@
 import random
 
 # Food values
-food = random.uniform(0,2)
+food = random.randint(0,2)
 CANDY = 0
 STEAK = 1
 POTION = 2
