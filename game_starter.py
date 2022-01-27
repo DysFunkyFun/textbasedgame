@@ -429,8 +429,10 @@ def room_4(gold: int, health: int):
 
     valid_directions = ['W', 'S', 'E']
     direction = get_direction()
+    
     if direction not in valid_directions:
-        
+        print(invalid_direction_msg)
+
     
 
     print_status(gold, health)
