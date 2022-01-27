@@ -25,6 +25,7 @@ GAMBLER_DAMAGE = random.randint(0,35)
 TUITION = 50
 BEER = 10
 player_name = ''
+invalid_direction_msg = ('You fumble around in the darkness...your hands meet familiar structures as you feel your way around. You realize you\'re back where you started before you moved.')
 
 def print_status(gold: int, health: int):
     '''
@@ -226,7 +227,7 @@ def room_1(gold: int, health: int):
     elif direction == 'S':
         room_2(gold, health)
     else:
-        print('You fumble around in the darkness...your hands meet familiar structures as you feel your way towards the beaten path. You realize you\'re back where you started.')
+        print(invalid_direction_msg)
 
  
     
@@ -264,7 +265,7 @@ def room_2(gold: int, health: int):
     direction = get_direction()
     
     while direction not in valid_directions:
-        print('There\'s nothing in that direction...')
+        print(invalid_direction_msg)
 
     print_status(gold, health)
 
@@ -274,7 +275,7 @@ def room_2(gold: int, health: int):
     elif direction == 'E':
         room_3(gold, health)
     else:
-        print('Error: invalid direction managed to split through within room 2')
+        print(invalid_direction_msg)
           
 def room_3(gold: int, health: int):
     '''
