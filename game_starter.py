@@ -15,8 +15,10 @@ DWARF = 1
 TROLL = 2
 WYVERN = 3
 GAMBLER = 4
+BAT = 6
 BUNNY_DAMAGE = 5
 DWARF_DAMAGE = 10
+BAT_DAMAGE = random.randint(10, 20)
 TROLL_DAMAGE = 20
 WYVERN_DAMAGE = 25
 GAMBLER_DAMAGE = random.randint(0,35)
@@ -27,6 +29,14 @@ BEER = 30
 invalid_direction_msg = ('You fumble around in the darkness...your hands meet familiar structures as you feel your way around. You realize you\'re back where you started before you moved.')
 cardinal_directions = ['N', 'E', 'S', 'W']
 did_player_win = False
+
+# Dictionary for player values -- stored in global scope.
+player = {
+    'name': '',
+    'gold': 0,
+    'health': 100,
+    'room_num': 1
+}
 
 # Rooms dictionary -- the purpose will be to store the contents of each room.
 Rooms_list = [
@@ -107,7 +117,9 @@ Rooms_list = [
         'message': 
         '''
         -----------------------------------------------------------
-
+        You have no idea where you are -- you know for sure you\'ve come across another room')
+        Stumbling in the darkness, the only stimulus you have is a cool, damp breeze blowing 
+        towards you, through what must be multiple exits. This will be a hard decision...
         ''',
         'valid_directions': ['N', 'E', 'W'],
         'north_destination': lambda: update_player_room(4),
@@ -122,7 +134,9 @@ Rooms_list = [
         'message': 
         '''
         -----------------------------------------------------------
-        
+        You hurriedly escape into what appears to be a panic room.
+        Looking at your surroundings, it\'s obvious someone left in a hurry.
+        This seems to be near the end of the cave...it\'s clear there\'s a door at the end of the corridor.
         ''',
         'valid_directions': ['E', 'W'],
         'north_destination': lambda: print(invalid_direction_msg),
@@ -131,6 +145,28 @@ Rooms_list = [
         'west_destination': lambda: update_player_room(5)
     }
 ]
+
+
+def update_player_gold(gold: int):
+    player['gold'] = gold
+
+
+def update_player_health(health: int):
+    player['health'] = health
+
+
+def update_player_room(room_num: int):
+    player['room_num'] = room_num
+
+
+def add_player_gold(gold: int):
+    update_player_gold(player['gold'] + gold)
+
+
+def damage_player(damage: int):
+    new_health = player['health'] - damage
+    new_health = 0 if new_health < 0 else new_health
+    update_player_health(new_health)
 
 
 def print_status():
@@ -152,6 +188,7 @@ def print_status():
     else:
         print('\n Your health is ' + str(health) + ' and you have ' + str(gold) + ' gold\n')
         
+
 def find_treasure(max_gold: int) -> int:
     '''
     This function calculates how much treasure is found by generating a random gold amount between 1 and the max number of gold coins.
@@ -166,16 +203,14 @@ def find_treasure(max_gold: int) -> int:
     int
         The actual amount of gold the user found.
     ''' 
-    player_gold = player['gold']
     gold = random.randint(1, max_gold)
-    new_gold = player_gold + gold
+    add_player_gold(gold)
     
     if gold < max_gold / 2:
         print('\nYou find ' + str(gold) + ' gold pieces on the floor.\n')
     else:
         print('\nYou find a huge mound of ' + str(gold) + ' gold pieces!\n')
-    
-    update_player_gold(new_gold)
+
 
 def search_for_treasure() -> bool:
     valid_responses = ['yes', 'no', 'y', 'n']
@@ -223,7 +258,6 @@ def eat_food(food):
     update_player_health(health)
         
 
-
 def fight_battle(creature: int):
     '''
     This function simulates battle with one of the optional creatures. A damage value will be generated based on each creatures max damage and a message will
@@ -240,9 +274,8 @@ def fight_battle(creature: int):
     int
         The damage dealt to the player during the battle.
     ''' 
-    damage = 0
-
     
+    damage = 0
     if creature == BUNNY:
         damage = random.randint(1, BUNNY_DAMAGE)
         print('\nYou trip over a cute bunny, dealing ' + str(damage) + ' damage to your health.\n')
@@ -258,14 +291,23 @@ def fight_battle(creature: int):
         damage = random.randint(1, WYVERN_DAMAGE)
         print('Chills run down your spine as you notice a polymorphic creature standing in your way -- it has wings like a bat and a tail like a scorpion -- the head is that of a lion.')
         print('\nThe Wyvern pierces you with their stinger, dealing ' + str(damage) + ' damage to your health.\n')    
+    elif creature == BAT:
+        damage = random.randint(1, BAT_DAMAGE)
+        print('A high-pitched shriek indicates the presence of a bat! This creature seems unsure of itself...')
+        print('\nThe Bat dives blindly towards you, dealing ' + str(damage) + ' damage to your health.\n')    
     elif creature == GAMBLER:
-        damage = random.randint(1, GAMBLER_DAMAGE)
+        damage = random.randint(0, GAMBLER_DAMAGE)
         print('A dwarf-like creature with beady eyes smiles at you -- you hear him snicker menacingly as he begins to shake a pair of magical dice.')
         print('\nThe Gambler rolls his dice -- throwing them at you to deal ' + str(damage) + ' damage to your health.\n')  
     else:
         print('\nIt is ghostly quiet here, you must be alone\n')
         
-    return damage
+    # Damage the player
+    if damage > 0:
+        damage_player(damage)
+    elif damage == 0:
+        print('Well...gambling doesn\'t always pay off, now does it?')
+    
     
 def get_direction() -> str:
     '''
@@ -285,9 +327,11 @@ def get_direction() -> str:
         
     return direction
 
+
 def death_event():
     print('You feel the life leaving your body as your health reaches' + str(player['health']) + '-- this is the end of ' + (player['name']))
     exit()
+
 
 def win_event():
     print('\n------------------------------------------------------------')
@@ -295,6 +339,7 @@ def win_event():
     print('adjust to the bright sunshine. Congratulations,')
     print('you made it out of the cave with ' + str(player['health']) + ' health!')
     exit()    
+
 
 def is_game_over():
     gold = player['gold']
@@ -325,8 +370,7 @@ def room_1():
     This function visits the first room in the game and starts off the story.
     ''' 
     
-    damage = fight_battle(0)
-    damage_player(damage)
+    fight_battle(0)
 
     if player['health'] > 0:
         if search_for_treasure():
@@ -339,24 +383,28 @@ def room_2():
     '''
     This function visits the second room in the game.
     ''' 
+    fight_battle(TROLL)
     
-
+    if player['health'] > 0:
+        if search_for_treasure():
+            fight_battle(GAMBLER)
+        else:
+            print('Instead of treasure.....\n')
+            eat_food(CANDY)
+            
     print_status()
-
 
 
 def room_3():
     '''
     This function visits the third room in the game.
     ''' 
-    damage = fight_battle(DWARF)
-    damage_player(damage)
+    fight_battle(DWARF)
 
     if player['health'] > 0:
         if search_for_treasure():
             find_treasure(15)
     
-            
     print_status()
 
 
@@ -365,29 +413,27 @@ def room_4():
     This function visits the fourth room in the game.
     ''' 
     
-    damage = fight_battle(WYVERN)
-    damage_player(damage)
+    fight_battle(WYVERN)
 
     if player['health'] > 0:
         eat_food(STEAK)
         if search_for_treasure():
             find_treasure(20)
         else:
-            damage = fight_battle(GAMBLER)
-            damage_player(damage)
+            fight_battle(GAMBLER)
 
     print_status()
+    
     
 def room_5():
     '''
     This function visits the fifth room in the game.
     ''' 
+    fight_battle(BAT)
     
-    
-
-    
-
-    
+    if player['health'] > 0:
+        if search_for_treasure():
+            find_treasure(30)
 
     print_status()
 
@@ -396,18 +442,19 @@ def room_6():
     '''
     This function visits the sixth room in the game.
     ''' 
-    print('\n------------------------------------------------------------')
-    print('You hurriedly escape into what appears to be a panic room.')
-    print('Looking at your surroundings, it\'s obvious someone left in a hurry.')
-    print('This seems to be near the end of the cave...it\'s clear there\'s a door at the end of the corridor.\n')
+    
 
     door_value = random.randint(0,10)
-    creature = random.randint(0, GAMBLER)
+    creature = random.randint(TROLL, GAMBLER)
+
 
     if door_value == 0:
         print('...you are extremely lucky and find that it opens, behind it is everything you were searching for!\n')
+        add_player_gold(TUITION)
+        win_event()
+
         
-    elif door_value >= 6:
+    elif door_value <= 3:
         print('...there appears to be something shiny and heavy blocking it...\n')
         find_treasure(30)
         
@@ -415,23 +462,6 @@ def room_6():
         print('...it\'s guarded by a ' + creature + '!')
         fight_battle(creature)
     
-    
-
-def update_player_gold(gold: int):
-    player['gold'] = gold
-
-def update_player_health(health: int):
-    player['health'] = health
-
-def update_player_room(room_num: int):
-    player['room_num'] = room_num
-
-def damage_player(damage: int):
-    health = player['health']
-    health -= damage
-    if health < 0:
-        health = 0
-    update_player_health(health)
 
 def get_current_room(room_num: int):
     for room in Rooms_list:
@@ -439,11 +469,13 @@ def get_current_room(room_num: int):
             return room
     return None
 
+
 def validate_direction(direction: str, valid_directions_list) -> bool:
     if direction in valid_directions_list:
         return True
     else:
         return False
+
 
 def run_to_destination(direction: str, room):
     if direction == 'N':
@@ -455,13 +487,6 @@ def run_to_destination(direction: str, room):
     elif direction == 'W':
         room['west_destination']()
 
-#Dictionary for player values -- stored in global scope.
-player = {
-    'name': '',
-    'gold': 0,
-    'health': 100,
-    'room_num': 1
-}
 
 room_map = {
     1: lambda : room_1(),
