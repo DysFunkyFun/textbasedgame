@@ -16,25 +16,24 @@ TROLL = 2
 WYVERN = 3
 GAMBLER = 4
 BAT = 6
-BUNNY_DAMAGE = 5
-DWARF_DAMAGE = 10
-BAT_DAMAGE = random.randint(10, 20)
-TROLL_DAMAGE = 20
-WYVERN_DAMAGE = 25
-GAMBLER_DAMAGE = random.randint(0,35)
+BUNNY_DAMAGE = 10
+DWARF_DAMAGE = 15
+BAT_DAMAGE = 25
+TROLL_DAMAGE = 30
+WYVERN_DAMAGE = 50
+GAMBLER_DAMAGE = 40
 
 # Misc values
-TUITION = 60
-BEER = 30
+TUITION = 50
+BEER = 50
 invalid_direction_msg = ('You fumble around in the darkness...your hands meet familiar structures as you feel your way around. You realize you\'re back where you started before you moved.')
 cardinal_directions = ['N', 'E', 'S', 'W']
-did_player_win = False
 
 # Dictionary for player values -- stored in global scope.
 player = {
     'name': '',
     'gold': 0,
-    'health': 100,
+    'health': 125,
     'room_num': 1
 }
 
@@ -45,11 +44,14 @@ Rooms_list = [
         'room_num': 1,
         'message':  
         '''
-        ---------------------------------------------------------
-        You stumble into a hole in the ground. When you
-        shake off the dirt and leaves you realize you are in
-        the entrance to a cave that looks man made. As you
-        take a look around, you decide it might be fun to explore.
+    ----------
+    | Room 1 |
+    |----------------------------------------------------------------
+    | You stumble into a hole in the ground. When you               |
+    | shake off the dirt and leaves you realize you are in          |
+    | the entrance to a cave that looks man made. As you            |
+    | take a look around, you decide it might be fun to explore.    |
+    -----------------------------------------------------------------
         ''',
         'valid_directions': ['E', 'S'],
         'north_destination': lambda: print(invalid_direction_msg),
@@ -63,12 +65,15 @@ Rooms_list = [
         'room_num': 2,
         'message': 
         '''
-        ---------------------------------------------------------
-        You have entered the throne room. In the middle
-        of the room there is a giant wooden throne with
-        intricate carvings. As you take a closer look at the
-        carvings, you see that they show trolls chasing humans.
-        Hmmm, maybe this is not a great place to stop for a rest.
+    ----------
+    | Room 2 |
+    |------------------------------------------------------------
+    | You have entered the throne room. In the middle           |
+    | of the room there is a giant wooden throne with           |
+    | intricate carvings. As you take a closer look at the      |
+    | carvings, you see that they show trolls chasing humans.   |
+    | Hmmm, maybe this is not a great place to stop for a rest. |
+    -------------------------------------------------------------
         ''',
         'valid_directions': ['N', 'E'],
         'north_destination': lambda: update_player_room(1),
@@ -82,10 +87,13 @@ Rooms_list = [
         'room_num': 3,
         'message': 
         '''
-        ---------------------------------------------------------
-        You have entered an abandoned pub. There are piles
-        of dirty dishes and empty beer mugs all over the place.
-        You hear someone coming and duck behind a table to hide.
+    ----------
+    | Room 3 |
+    |------------------------------------------------------------
+    | You have entered an abandoned pub. There are piles        |
+    | of dirty dishes and empty beer mugs all over the place.   |
+    | You hear someone coming and duck behind a table to hide.  |
+    -------------------------------------------------------------        
         ''',
         'valid_directions': ['S', 'E'],
         'north_destination': lambda: print(invalid_direction_msg),
@@ -99,10 +107,13 @@ Rooms_list = [
         'room_num': 4,
         'message': 
         '''
-        -----------------------------------------------------------
-        You have entered a huge storage room filled with empty boxes.
-        Looking at the side of one box, you see ACME Wyvern food
-        You better get out of here before you end up on the menu.
+    ----------
+    | Room 4 |
+    |----------------------------------------------------------------
+    | You have entered a huge storage room filled with empty boxes. |
+    | Looking at the side of one box, you see ACME Wyvern food      |
+    | You better get out of here before you end up on the menu.     |
+    -----------------------------------------------------------------
         ''',
         'valid_directions': ['E', 'S', 'W'],
         'north_destination': lambda: print(invalid_direction_msg),
@@ -116,10 +127,13 @@ Rooms_list = [
         'room_num': 5,
         'message': 
         '''
-        -----------------------------------------------------------
-        You have no idea where you are -- you know for sure you\'ve come across another room')
-        Stumbling in the darkness, the only stimulus you have is a cool, damp breeze blowing 
-        towards you, through what must be multiple exits. This will be a hard decision...
+    ----------
+    | Room 5 |
+    |----------------------------------------------------------------------------------------
+    | You have no idea where you are -- you know for sure you\'ve come across another room  |
+    | Stumbling in the darkness, the only stimulus you have is a cool, damp breeze blowing  | 
+    | towards you, through what must be multiple exits. This will be a hard decision...     |
+    -----------------------------------------------------------------------------------------
         ''',
         'valid_directions': ['N', 'E', 'W'],
         'north_destination': lambda: update_player_room(4),
@@ -133,10 +147,14 @@ Rooms_list = [
         'room_num': 6,
         'message': 
         '''
-        -----------------------------------------------------------
-        You hurriedly escape into what appears to be a panic room.
-        Looking at your surroundings, it\'s obvious someone left in a hurry.
-        This seems to be near the end of the cave...it\'s clear there\'s a door at the end of the corridor.
+    ----------
+    | Room 6 |
+    |------------------------------------------------------------------------
+    | You hurriedly escape into what appears to be a panic room.            |
+    | Looking at your surroundings, it\'s obvious someone left in a hurry.  |
+    | This seems to be near the end of the cave...it\'s clear there\'s a    |
+    | door at the end of the corridor.                                      |
+    -------------------------------------------------------------------------
         ''',
         'valid_directions': ['E', 'W'],
         'north_destination': lambda: print(invalid_direction_msg),
@@ -167,6 +185,7 @@ def damage_player(damage: int):
     new_health = player['health'] - damage
     new_health = 0 if new_health < 0 else new_health
     update_player_health(new_health)
+    is_game_over()
 
 
 def print_status():
@@ -186,7 +205,7 @@ def print_status():
     elif health > 2 * gold:
         print('\nYou are strong with ' + str(health) + ' health, but you only have ' + str(gold) + ' gold\n')
     else:
-        print('\n Your health is ' + str(health) + ' and you have ' + str(gold) + ' gold\n')
+        print('\nYour health is ' + str(health) + ' and you have ' + str(gold) + ' gold\n')
         
 
 def find_treasure(max_gold: int) -> int:
@@ -289,7 +308,8 @@ def fight_battle(creature: int):
         print('\nAn angry troll takes a swing at you and does ' + str(damage) + ' damage to your health.\n')
     elif creature == WYVERN:
         damage = random.randint(1, WYVERN_DAMAGE)
-        print('Chills run down your spine as you notice a polymorphic creature standing in your way -- it has wings like a bat and a tail like a scorpion -- the head is that of a lion.')
+        print('Chills run down your spine as you notice a polymorphic creature standing in your way --')
+        print('it has wings like a bat and a tail like a scorpion -- the head is that of a lion.')
         print('\nThe Wyvern pierces you with their stinger, dealing ' + str(damage) + ' damage to your health.\n')    
     elif creature == BAT:
         damage = random.randint(1, BAT_DAMAGE)
@@ -329,15 +349,16 @@ def get_direction() -> str:
 
 
 def death_event():
-    print('You feel the life leaving your body as your health reaches' + str(player['health']) + '-- this is the end of ' + (player['name']))
+    print('You feel the life leaving your body as your health reaches ' + str(player['health']) + ' -- this is the end of ' + (player['name']))
     exit()
 
 
 def win_event():
-    print('\n------------------------------------------------------------')
+    print('You empty your pockets and discover ' + str(player['gold']) + ' gold coins!')
+    print('This will pay for your tuition, and your beer! w00t!')
     print('You crawl out of the cave and blink your eyes to')
-    print('adjust to the bright sunshine. Congratulations,')
-    print('you made it out of the cave with ' + str(player['health']) + ' health!')
+    print('adjust to the bright sunshine. Congratulations!')
+    print('Try not to spend it all in one place!')
     exit()    
 
 
@@ -345,24 +366,20 @@ def is_game_over():
     gold = player['gold']
     health = player['health']
 
-    game_over = False
-    if gold >= TUITION:
-        print('You empty your pockets and discover ' + str(gold) + ' gold coins.')
-        print('This will pay for the tuition next semester!!!')
-        game_over = True
-        did_player_win = True
-        
-    elif gold >= BEER:
-        print('You notice that you have ' + str(gold) + ' gold coins in your pocket.')
-        print('This will pay for beer and pizza next semester!!!')
+    if gold >= 100:
         game_over = True
         did_player_win = True
         
     elif health == 0:
         game_over = True
+        did_player_win = False
+
+    else:
+        game_over = False
+        did_player_win = False
 
 
-    return game_over
+    return game_over, did_player_win
 
     
 def room_1():
@@ -413,10 +430,14 @@ def room_4():
     This function visits the fourth room in the game.
     ''' 
     
-    fight_battle(WYVERN)
+    rand = random.randint(1,100)
+    if rand >= 50:
+        fight_battle(WYVERN)
+    else:
+        eat_food(STEAK)
 
     if player['health'] > 0:
-        eat_food(STEAK)
+        
         if search_for_treasure():
             find_treasure(20)
         else:
@@ -429,8 +450,12 @@ def room_5():
     '''
     This function visits the fifth room in the game.
     ''' 
-    fight_battle(BAT)
-    
+    rand = random.randint(1, 100)
+    if rand >= 50:
+        fight_battle(BAT)
+    else:
+        eat_food(food)        
+        
     if player['health'] > 0:
         if search_for_treasure():
             find_treasure(30)
@@ -443,23 +468,28 @@ def room_6():
     This function visits the sixth room in the game.
     ''' 
     
-
     door_value = random.randint(0,10)
     creature = random.randint(TROLL, GAMBLER)
 
-
+    # ONLY IF 0
     if door_value == 0:
         print('...you are extremely lucky and find that it opens, behind it is everything you were searching for!\n')
         add_player_gold(TUITION)
         win_event()
 
-        
+    # Range [1, 3]
     elif door_value <= 3:
         print('...there appears to be something shiny and heavy blocking it...\n')
         find_treasure(30)
         
+    # Range [4, 6]
+    elif door_value <= 6:
+        print('Your stomach growls...somehow the door understands this and inexplicably spits out some food.')
+        eat_food(food)
+    
+    # Everything else [7, 10]
     else:
-        print('...it\'s guarded by a ' + creature + '!')
+        print('...it\'s guarded by a ' + str(creature) + '!')
         fight_battle(creature)
     
 
@@ -503,7 +533,9 @@ if __name__ == '__main__':
     player['name'] = input('Before we begin...what is your name, traveler?\n')
 
     # Main game loop
-    while not is_game_over():
+    game_over = False
+    did_player_win = False
+    while not game_over:
         
         # Get the current room
         current_room = get_current_room(player['room_num'])
@@ -514,7 +546,10 @@ if __name__ == '__main__':
         # Run the event for that room
         room_map[current_room['room_num']]()
 
-        if not is_game_over():
+        # Check if game is over
+        game_over, did_player_win = is_game_over()
+
+        if not game_over:
 
             is_valid_direction = False
             direction = ''
@@ -538,7 +573,7 @@ if __name__ == '__main__':
             run_to_destination(direction, current_room)
 
     # End the game
-    if did_player_win:
+    if is_game_over():
         win_event()
     else:
         death_event()
