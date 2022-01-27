@@ -1,7 +1,7 @@
 import random
 
 # Food values
-food = random.randint(0,2)
+food = random.uniform(0,2)
 CANDY = 0
 STEAK = 1
 POTION = 2
@@ -24,7 +24,7 @@ GAMBLER_DAMAGE = random.randint(0,35)
 # Misc values
 TUITION = 50
 BEER = 10
-max_gold = 95
+player_name = ''
 
 def print_status(gold: int, health: int):
     '''
@@ -66,6 +66,19 @@ def find_treasure(max_gold: int) -> int:
         print('\nYou find a huge mound of ' + str(gold) + ' gold pieces!\n')
     
     return gold
+
+def search_for_treasure() -> bool:
+    valid_responses = ['yes', 'no', 'y', 'n']
+    
+    user_choice = input('This room seems interesting, would you like to search for treasure? (Y/N)\n').lower()
+
+    while user_choice not in valid_responses:
+        user_choice = input('Sorry that\'s not a valid response, please type (Y/N) to make your choice: ')
+
+    if user_choice == 'yes' or user_choice == 'y':
+        return True
+    else:
+        return False    
     
 def eat_food(food: int, health: int):
     '''
@@ -116,7 +129,6 @@ def fight_battle(creature: int):
     ''' 
     damage = 0
     
-    
     if creature == BUNNY:
         damage = random.randint(1, BUNNY_DAMAGE)
         print('\nYou trip over a cute bunny and do ' + str(damage) + ' damage to your health.\n')
@@ -141,17 +153,29 @@ def get_direction() -> str:
     Returns
     -------
     str
-        User choice of direction between one of the following values (N, S, E, W, NE, NW, SE, SW)
+        User choice of direction between one of the following values (N, S, E, W)
     ''' 
-    optional_directions = ['N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW']
-    direction = input('\nWhat direction would you like to go? (N,NE,NW,S,SE,SW): ').upper()
+    optional_directions = ['N', 'S', 'E', 'W']
+    direction = input('\nWhat direction would you like to go? (N, S, E, W): ').upper()
     
     while direction not in optional_directions:
         print('Sorry, you can not go that way...\n')
-        direction = input('What direction would you like to go? (N,NE,NW,S,SE,SW): ').upper()
+        direction = input('What direction would you like to go? (N, S, E, W): ').upper()
         
     return direction
+
+def update_health(damage_dealt: int, health: int):
+    new_health = health - damage_dealt
+
+    if new_health <= 0:
+        death_event()
     
+    return new_health
+
+def death_event():
+    print('You feel the life leaving your body as your health reaches 0 -- this is the end of ' + player_name)
+    exit()
+
 def game_exit(gold: int, health: int):
     print('\n------------------------------------------------------------')
     print('You crawl out of the cave and blink your eyes to')
@@ -184,57 +208,26 @@ def room_1(gold: int, health: int):
         The amount of gold the player currently has.
     ''' 
     print('\n------------------------------------------------------------')
-    print('You just stumbled into a hold in the ground. When you')
+    print('You just stumbled into a hole in the ground. When you')
     print('shake off the dirt and leaves you realize you are in')
     print('the entrance to a cave that looks man made. As you')
     print('take a look around, you decide it might be fun to explore.\n')
     
-    # Sequence 1
+    valid_directions = ['E', 'S']
     direction = get_direction()
     
-    
-    if direction == 'N' or 'S':
-        fight_battle(creature)
-    elif direction == 'E':
-        eat_food(food, health)
-    elif direction == 'NE' or 'SE':
-        eat_food(food, health)
-    elif direction == 'SW' or 'NW':
-        fight_battle(creature)
-    else:
-        eat_food(food, health)
-    
-    print_status(gold, health)
-    
-    # Sequence 2
-    direction = get_direction()
-    if direction == 'N' or 'S':
-        gold = find_treasure(max_gold)
-    elif direction == 'E':
-        eat_food(food, health)
-    elif direction == 'NE' or 'SE':
-        fight_battle(creature)
-    elif direction == 'SW' or 'NW':
-        fight_battle(creature)
-    else:
-        eat_food(food, health)
+    while direction not in valid_directions:
+        print('There\'s nothing in that direction...')
     
     print_status(gold, health)
 
- # Sequence 2
-    direction = get_direction()
-    if direction == 'N' or 'S':
-        creature = fight_battle(creature)
-    elif direction == 'E':
-        gold = find_treasure(max_gold)
-    elif direction == 'NE' or 'SE':
-        eat_food(food, health)
-    elif direction == 'SW' or 'NW':
-        fight_battle(creature)
+    if direction == 'E':
+        room_4(gold, health)
+    elif direction == 'S':
+        room_2(gold, health)
     else:
-        eat_food(food, health)
-    
-    print_status(gold, health)
+        print('Error: invalid direction managed to split through within room 1')
+ 
     
 def room_2(gold: int, health: int):
     '''
@@ -253,11 +246,34 @@ def room_2(gold: int, health: int):
     print('intricate carvings. As you take a closer look at the')
     print('carvings, you see that they show trolls chasing humans.')
     print('Hmmm, maybe this is not a great place to stop for a rest.\n')
+
+    valid_directions = ['N', 'E']
+
+    if search_for_treasure():
+        gold += find_treasure(10)
+        print('While you were searching for treasure, you heard something creeping in the shadows behind you...')
+        damage_dealt = fight_battle(TROLL)
+        health = update_health(damage_dealt, health)
     
-    # Add your own code here
+    else:
+        print('You hear something shuffling behind you... it\'s approaching quickly...')
+        damage_dealt = fight_battle(TROLL)
+        health = update_health(damage_dealt, health)
+
+    direction = get_direction()
     
+    while direction not in valid_directions:
+        print('There\'s nothing in that direction...')
+
     print_status(gold, health)
-    
+
+    if direction == 'N':
+        room_1(gold, health)
+    elif direction == 'E':
+        room_3(gold, health)
+    else:
+        print('Error: invalid direction managed to split through within room 2')
+          
 def room_3(gold: int, health: int):
     '''
     This function visits the third room in the game.
@@ -273,9 +289,9 @@ def room_3(gold: int, health: int):
     print('You have entered an abandoned pub. There are piles')
     print('of dirty dishes and empty beer mugs all over the place.')
     print('You hear someone coming and duck behind a table to hide.\n')
-    
-    # Add your own code here
-    
+
+    # Add your own code
+
     print_status(gold, health)
     
 def room_4(gold: int, health: int):
@@ -293,15 +309,15 @@ def room_4(gold: int, health: int):
     print('You have entered a huge storage room filled with empty boxes.')
     print('Looking at the side of one box, you see \'ACME troll food\'.')
     print('You better get out of here before you end up on the menu.\n')
-    
-    # Add your own code here
-    
+
+    # Add your own code
+
     print_status(gold, health)
     
 # Add additional room functions following these functions
-
 if __name__ == '__main__':
     # Initialize player values
     gold = 0
     health = 100
+    player_name = input('Before we begin...what is your name, traveler?\n')
     room_1(gold, health)
