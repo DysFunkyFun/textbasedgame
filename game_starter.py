@@ -178,6 +178,10 @@ def update_health(damage_dealt: int, health: int):
     
     return new_health
 
+def has_fought():
+    if 
+
+
 def death_event():
     print('You feel the life leaving your body as your health reaches 0 -- this is the end of ' + player_name)
     exit()
@@ -364,7 +368,8 @@ def room_3(gold: int, health: int):
 
     valid_directions = ['S', 'E']
     
-    fight_battle(GAMBLER)
+    damage_dealt = fight_battle(GAMBLER)
+    health = update_health(damage_dealt, health)
     
     if search_for_treasure():
         find_treasure(10)
@@ -394,7 +399,8 @@ def room_3_repeat(gold: int, health: int):
 
     valid_directions = ['S', 'E']
     
-    fight_battle(GAMBLER)
+    damage_dealt = fight_battle(GAMBLER)
+    health = update_health(damage_dealt, health)
     
     if search_for_treasure():
         find_treasure(10)
@@ -448,10 +454,10 @@ def room_5(gold: int, health: int):
     health : int
         The amount of gold the player currently has.
     ''' 
-    print('\n------------------------------------------------------------')
-    print('You have entered a huge storage room filled with empty boxes.')
-    print('Looking at the side of one box, you see \'ACME Wyvern food\'.')
-    print('You better get out of here before you end up on the menu.\n')
+    print('\n---------------------------------------------------------------------------------------------')
+    print('You have no idea where you are -- you know for sure you\'ve come across another room')
+    print('Stumbling in the darkness, the only stimulus is the wind chasing through what must be the exit.')
+    print('\n')
 
     valid_directions = ['N', 'W', 'E']
     direction = get_direction()
