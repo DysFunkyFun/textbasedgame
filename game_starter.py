@@ -429,13 +429,39 @@ def room_4(gold: int, health: int):
 
     valid_directions = ['W', 'S', 'E']
     direction = get_direction()
+    if direction not in valid_directions:
+        
     
 
     print_status(gold, health)
     
 def room_5(gold: int, health: int):
     '''
-    This function visits the fourth room in the game.
+    This function visits the fifth room in the game.
+    
+    Params
+    ------
+    gold : int
+        The amount of gold the player currently has.
+    health : int
+        The amount of gold the player currently has.
+    ''' 
+    print('\n------------------------------------------------------------')
+    print('You have entered a huge storage room filled with empty boxes.')
+    print('Looking at the side of one box, you see \'ACME Wyvern food\'.')
+    print('You better get out of here before you end up on the menu.\n')
+
+    valid_directions = ['N', 'W', 'E']
+    direction = get_direction()
+
+    
+
+    print_status(gold, health)
+
+
+def room_6(gold: int, health: int):
+    '''
+    This function visits the sixth room in the game.
     
     Params
     ------
@@ -447,9 +473,21 @@ def room_5(gold: int, health: int):
     print('\n------------------------------------------------------------')
     print('You hurriedly escape into what appears to be a panic room.')
     print('Looking at your surroundings, it\'s obvious someone left in a hurry.')
-    print('This seems to be near the end of the cave...maybe there\'s a door.\n')
+    print('This seems to be near the end of the cave...it\'s clear there\'s a door at the end of the corridor.\n')
 
-    # Add your own code
+    door_value = random.randint(0,10)
+    creature = random.randint(0, GAMBLER)
+
+    if door_value == 0:
+        print('...you are extremely lucky and find that it opens, behind it is everything you were searching for!\n')
+        game_exit(50, health)
+    elif door_value >= 6:
+        print('...there appears to be something shiny and heavy blocking it...\n')
+        find_treasure(30)
+        game_exit(gold, health)
+    else:
+        print('...it\'s guarded by a ' + creature + '!')
+        fight_battle(creature)
 
     print_status(gold, health)
 if __name__ == '__main__':
