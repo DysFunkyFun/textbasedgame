@@ -71,7 +71,7 @@ def find_treasure(max_gold: int) -> int:
 def search_for_treasure() -> bool:
     valid_responses = ['yes', 'no', 'y', 'n']
     
-    user_choice = input('This room seems interesting, would you like to search for treasure? (Y/N)\n').lower()
+    user_choice = input('You see something shiny, would you like to search for treasure? (Y/N)\n').lower()
 
     while user_choice not in valid_responses:
         user_choice = input('Sorry that\'s not a valid response, please type either (Y/N):\n')
@@ -81,6 +81,7 @@ def search_for_treasure() -> bool:
     else:
         return False    
     
+
 def eat_food(food: int, health: int):
     '''
     This function allows the player to eat one of the optional food items which will update their health and print a message.
@@ -112,6 +113,10 @@ def eat_food(food: int, health: int):
     if health > 100:
         health = 100
         
+def search_for_food():
+    ...
+
+
 def fight_battle(creature: int):
     '''
     This function simulates battle with one of the optional creatures. A damage value will be generated based on each creatures max damage and a message will
@@ -217,18 +222,38 @@ def room_1(gold: int, health: int):
     valid_directions = ['E', 'S']
     direction = get_direction()
     
-    while direction not in valid_directions:
-        print('There\'s nothing in that direction...')
-    
-    print_status(gold, health)
-
-    if direction == 'E':
+    if direction not in valid_directions:
+        print(invalid_direction_msg)
+        room_1_repeat(gold, health)
+    elif direction == 'E':
         room_4(gold, health)
     elif direction == 'S':
         room_2(gold, health)
-    else:
-        print(invalid_direction_msg)
+    print_status(gold, health)
 
+#This is a function which repeats the first room if the user chooses an invalid direction -- from now on these will just be labeled as "room repeat x" in comments.
+def room_1_repeat(gold: int, health: int):
+    '''
+    This function repeats the first room in the game.
+    
+    Params
+    ------
+    gold : int
+        The amount of gold the player currently has.
+    health : int
+        The amount of gold the player currently has.
+    ''' 
+    valid_directions = ['E', 'S']
+    direction = get_direction()
+    
+    if direction not in valid_directions:
+        print(invalid_direction_msg)
+        room_1_repeat(gold, health)
+    elif direction == 'E':
+        room_4(gold, health)
+    elif direction == 'S':
+        room_2(gold, health)
+    print_status(gold, health)
  
     
 def room_2(gold: int, health: int):
@@ -266,6 +291,7 @@ def room_2(gold: int, health: int):
     
     while direction not in valid_directions:
         print(invalid_direction_msg)
+        room_2_repeat(gold, health)
 
     print_status(gold, health)
 
@@ -276,7 +302,50 @@ def room_2(gold: int, health: int):
         room_3(gold, health)
     else:
         print(invalid_direction_msg)
-          
+
+#Room repeat 2
+def room_2_repeat(gold: int, health: int):
+    '''
+    This function repeats the second room in the game.
+    
+    Params
+    ------
+    gold : int
+        The amount of gold the player currently has.
+    health : int
+        The amount of gold the player currently has.
+    ''' 
+    
+
+    valid_directions = ['N', 'E']
+
+    if search_for_treasure():
+        gold += find_treasure(10)
+        print('While you search for treasure, you hear something creeping in the shadows behind you...')
+        damage_dealt = fight_battle(TROLL)
+        health = update_health(damage_dealt, health)
+    
+    else:
+        print('You hear something shuffling behind you... it\'s approaching quickly...')
+        damage_dealt = fight_battle(TROLL)
+        health = update_health(damage_dealt, health)
+
+    direction = get_direction()
+    
+    if direction not in valid_directions:
+        print(invalid_direction_msg)
+        room_2_repeat(gold,health)
+
+    print_status(gold, health)
+
+
+    if direction == 'N':
+        room_1(gold, health)
+    elif direction == 'E':
+        room_3(gold, health)
+    else:
+        print(invalid_direction_msg)          
+
 def room_3(gold: int, health: int):
     '''
     This function visits the third room in the game.
@@ -293,10 +362,55 @@ def room_3(gold: int, health: int):
     print('of dirty dishes and empty beer mugs all over the place.')
     print('You hear someone coming and duck behind a table to hide.\n')
 
-    # Add your own code
-
-    print_status(gold, health)
+    valid_directions = ['S', 'E']
     
+    fight_battle(GAMBLER)
+    
+    if search_for_treasure():
+        find_treasure(10)
+    
+    direction = get_direction()
+    
+    while direction not in valid_directions:
+        print(invalid_direction_msg)
+    if direction == 'S':
+        room_2()
+    elif direction == 'E':
+        room_5()
+    
+    print_status(gold, health)
+
+def room_3_repeat(gold: int, health: int):
+    '''
+    This function visits the third room in the game.
+    
+    Params
+    ------
+    gold : int
+        The amount of gold the player currently has.
+    health : int
+        The amount of gold the player currently has.
+    ''' 
+
+    valid_directions = ['S', 'E']
+    
+    fight_battle(GAMBLER)
+    
+    if search_for_treasure():
+        find_treasure(10)
+    
+    direction = get_direction()
+    
+    if direction not in valid_directions:
+        print(invalid_direction_msg)
+        room_3_repeat(gold, health)
+    elif direction == 'S':
+        room_2()
+    elif direction == 'E':
+        room_5()
+    
+    print_status(gold, health)    
+
 def room_4(gold: int, health: int):
     '''
     This function visits the fourth room in the game.
@@ -310,14 +424,34 @@ def room_4(gold: int, health: int):
     ''' 
     print('\n------------------------------------------------------------')
     print('You have entered a huge storage room filled with empty boxes.')
-    print('Looking at the side of one box, you see \'ACME troll food\'.')
+    print('Looking at the side of one box, you see \'ACME Wyvern food\'.')
     print('You better get out of here before you end up on the menu.\n')
+
+    valid_directions = ['W', 'S', 'E']
+    direction = get_direction()
+    
+
+    print_status(gold, health)
+    
+def room_5(gold: int, health: int):
+    '''
+    This function visits the fourth room in the game.
+    
+    Params
+    ------
+    gold : int
+        The amount of gold the player currently has.
+    health : int
+        The amount of gold the player currently has.
+    ''' 
+    print('\n------------------------------------------------------------')
+    print('You hurriedly escape into what appears to be a panic room.')
+    print('Looking at your surroundings, it\'s obvious someone left in a hurry.')
+    print('This seems to be near the end of the cave...maybe there\'s a door.\n')
 
     # Add your own code
 
     print_status(gold, health)
-    
-# Add additional room functions following these functions
 if __name__ == '__main__':
     # Initialize player values
     gold = 0
