@@ -6,8 +6,8 @@ CANDY = 0
 STEAK = 1
 POTION = 2
 CANDY_RESTORE = 10
-STEAK_RESTORE = 20
-POTION_RESTORE = 40
+STEAK_RESTORE = 15
+POTION_RESTORE = 35
 
 # Creature values
 BUNNY = 0
@@ -102,14 +102,16 @@ def find_treasure(max_gold: int) -> int:
     int
         The actual amount of gold the user found.
     ''' 
+    player_gold = player['gold']
     gold = random.randint(1, max_gold)
+    new_gold = player_gold + gold
     
     if gold < max_gold / 2:
         print('\nYou find ' + str(gold) + ' gold pieces on the floor.\n')
     else:
         print('\nYou find a huge mound of ' + str(gold) + ' gold pieces!\n')
     
-    return gold
+    update_player_gold(new_gold)
 
 def search_for_treasure() -> bool:
     valid_responses = ['yes', 'no', 'y', 'n']
@@ -179,7 +181,7 @@ def fight_battle(creature: int):
     
     if creature == BUNNY:
         damage = random.randint(1, BUNNY_DAMAGE)
-        print('\nYou trip over a cute bunny and do ' + str(damage) + ' damage to your health.\n')
+        print('\nYou trip over a cute bunny, dealing ' + str(damage) + ' damage to your health.\n')
         
     elif creature == DWARF:
         damage = random.randint(1, DWARF_DAMAGE)
@@ -187,8 +189,14 @@ def fight_battle(creature: int):
     
     elif creature == TROLL:
         damage = random.randint(1, TROLL_DAMAGE)
-        print('\nAn angry troll kicks you in the rear and does ' + str(damage) + ' damage to your health.\n')
-        
+        print('\nAn angry troll takes a swing at you and does ' + str(damage) + ' damage to your health.\n')
+    elif creature == WYVERN:
+        damage = random.randint(1, WYVERN_DAMAGE)
+        print('\nThe wyvern pierces you with their stinger, dealing ' + str(damage) + ' damage to your health.\n')    
+    elif creature == GAMBLER:
+        damage = random.randint(1, GAMBLER_DAMAGE)
+        print('A dwarf-like creature with beady eyes smiles at you -- you hear him snicker menacingly as he begins to shake a pair of magical dice.')
+        print('\nThe Gambler rolls his dice -- throwing them at you to deal ' + str(damage) + ' damage to your health.\n')  
     else:
         print('\nIt is ghostly quiet here, you must be alone\n')
         
@@ -257,10 +265,7 @@ def room_1():
 
     if player['health'] > 0:
         if search_for_treasure():
-            gold = find_treasure(10)
-            player_gold = player['gold']
-            new_gold = player_gold + gold
-            update_player_gold(new_gold)
+            find_treasure(10)
         
     print_status()
 
@@ -325,7 +330,7 @@ def room_4():
     damage_player(damage)
 
     if player['health'] > 0:
-        eat_food(POTION)
+        eat_food(STEAK)
         if search_for_treasure():
             find_treasure(20)
         else:
