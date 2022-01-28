@@ -16,12 +16,14 @@ TROLL = 2
 WYVERN = 3
 GAMBLER = 4
 BAT = 6
+TROGG = 7
 BUNNY_DAMAGE = 10
 DWARF_DAMAGE = 15
 BAT_DAMAGE = 25
 TROLL_DAMAGE = 30
 WYVERN_DAMAGE = 50
 GAMBLER_DAMAGE = 40
+TROGG_DAMAGE = 60
 
 # Misc values
 TUITION = 50
@@ -130,7 +132,7 @@ Rooms_list = [
     ----------
     | Room 5 |
     |----------------------------------------------------------------------------------------
-    | You have no idea where you are -- you know for sure you\'ve come across another room  |
+    | You have no idea where you are -- you know for sure you\'ve come across another room   |
     | Stumbling in the darkness, the only stimulus you have is a cool, damp breeze blowing  | 
     | towards you, through what must be multiple exits. This will be a hard decision...     |
     -----------------------------------------------------------------------------------------
@@ -151,8 +153,8 @@ Rooms_list = [
     | Room 6 |
     |------------------------------------------------------------------------
     | You hurriedly escape into what appears to be a panic room.            |
-    | Looking at your surroundings, it\'s obvious someone left in a hurry.  |
-    | This seems to be near the end of the cave...it\'s clear there\'s a    |
+    | Looking at your surroundings, it\'s obvious someone left in a hurry.   |
+    | This seems to be near the end of the cave...it\'s clear there\'s a      |
     | door at the end of the corridor.                                      |
     -------------------------------------------------------------------------
         ''',
@@ -319,6 +321,10 @@ def fight_battle(creature: int):
         damage = random.randint(0, GAMBLER_DAMAGE)
         print('A dwarf-like creature with beady eyes smiles at you -- you hear him snicker menacingly as he begins to shake a pair of magical dice.')
         print('\nThe Gambler rolls his dice -- throwing them at you to deal ' + str(damage) + ' damage to your health.\n')  
+    elif creature == TROGG:
+        damage = random.randint(20, TROGG_DAMAGE)
+        print('A nasty, short, hairy little monster with razor sharp incisors hisses at you from across the room')
+        print('\nIt lunges at you -- powerful claws tear into your skin, dealing ' + str(damage) + ' damage to your health.\n')
     else:
         print('\nIt is ghostly quiet here, you must be alone\n')
         
@@ -468,8 +474,8 @@ def room_6():
     This function visits the sixth room in the game.
     ''' 
     
-    door_value = random.randint(0,10)
-    creature = random.randint(TROLL, GAMBLER)
+    door_value = 7
+    
 
     # ONLY IF 0
     if door_value == 0:
@@ -487,10 +493,10 @@ def room_6():
         print('Your stomach growls...somehow the door understands this and inexplicably spits out some food.')
         eat_food(food)
     
-    # Everything else [7, 10]
+    # Everything else [7, 9]
     else:
-        print('...it\'s guarded by a ' + str(creature) + '!')
-        fight_battle(creature)
+        print('...it\'s guarded by a trogg!')
+        fight_battle(TROGG)
     
 
 def get_current_room(room_num: int):
@@ -507,7 +513,7 @@ def validate_direction(direction: str, valid_directions_list) -> bool:
         return False
 
 
-def run_to_destination(direction: str, room):
+def move_to_destination(direction: str, room):
     if direction == 'N':
         room['north_destination']()
     elif direction == 'E':
@@ -543,7 +549,7 @@ if __name__ == '__main__':
         # Print room message
         print(current_room['message'])
 
-        # Run the event for that room
+        # run the event for that room
         room_map[current_room['room_num']]()
 
         # Check if game is over
@@ -564,13 +570,13 @@ if __name__ == '__main__':
 
                 if not is_valid_direction:
                     if direction in cardinal_directions:
-                        run_to_destination(direction, current_room)
+                        move_to_destination(direction, current_room)
                     else:
                         print('Try again, except this time choose a cardinal direction...(N, E, S, W).\n')
                     
 
             # Move the player to the next room
-            run_to_destination(direction, current_room)
+            move_to_destination(direction, current_room)
 
     # End the game
     if is_game_over():
