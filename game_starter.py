@@ -474,7 +474,7 @@ def room_6():
     This function visits the sixth room in the game.
     ''' 
     
-    door_value = 7
+    door_value = random.randint(0,10)
     
 
     # ONLY IF 0
@@ -493,7 +493,7 @@ def room_6():
         print('Your stomach growls...somehow the door understands this and inexplicably spits out some food.')
         eat_food(food)
     
-    # Everything else [7, 9]
+    # Everything else [7, 10]
     else:
         print('...it\'s guarded by a trogg!')
         fight_battle(TROGG)
